@@ -68,7 +68,11 @@ function Login() {
         <div>
         </div>
       </form>
-       <p>Already Have an Account</p>
+       <p>Already Have an Account Log in</p>
+       <p>If you do not Have an Account Register</p>
+         <Link to="/register" className='btn btn-success w-100 rounded-0'>
+          Register
+        </Link>
       </div>
     </div>
   )
