@@ -22,7 +22,7 @@ const handleSubmit = (e) => {
     return; // stop execution
   }
 
-  axios.post("http://localhost:3001/login", { email, password })
+  axios.post("https://mern-backend.up.railway.app/login", { email, password })
     .then(res => {
       if (res.data.Status === "SUCCESS") {
         if (res.data.role === "admin") {
