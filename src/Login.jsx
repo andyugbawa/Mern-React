@@ -12,25 +12,33 @@ function Login() {
       const navigate = useNavigate()
 
    axios.defaults.withCredentials =true;
-  const handleSubmit =(e)=>{
-    e.preventDefault()
-    axios.post("http://localhost:3001/login",{email,password})
-    .then(res=>{
 
-      if(res.data.status === "SUCCESS"){
-        if(res.data.role === "admin"){
-          navigate("/dashboard")
-        }else{
-          navigate("/home")
-        }
-      }
-      // console.log(res.data)
-      // alert("Created")
-    })
-    .catch(err=>{
-      console.log(err)
-    })
+const handleSubmit = (e) => {
+  e.preventDefault();
+
+  // Check if fields are empty
+  if (!email || !password) {
+    alert("Please enter both email and password");
+    return; // stop execution
   }
+
+  axios.post("http://localhost:3001/login", { email, password })
+    .then(res => {
+      if (res.data.Status === "SUCCESS") {
+        if (res.data.role === "admin") {
+          navigate("/dashboard");
+        } else {
+          navigate("/home");
+        }
+      } else {
+        alert(res.data); // show server message
+      }
+    })
+    .catch(err => {
+      console.log(err);
+      alert("Server error. Try again later.");
+    });
+};
   return (
    <div className='d-flex justify-content-center align-items-center bg-secondary vh-100'>
       <div className='bg-white p-3 rounded  w-25'>
@@ -62,9 +70,9 @@ function Login() {
            onChange={(e)=> setPassword(e.target.value)}
           />
         </div>
-        <Link to="/home" className='btn btn-success w-100 rounded-0'>
+        <button type="submit" className='btn btn-success w-100 rounded-0'>
           Login
-        </Link>
+        </button>
         <div>
         </div>
       </form>

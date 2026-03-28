@@ -10,17 +10,31 @@ import {Link,useNavigate} from "react-router-dom"
   const [password, setPassword] =useState()
   const navigate = useNavigate()
    
-  const handleSubmit =(e)=>{
-    e.preventDefault()
-    axios.post("http://localhost:3001/register",{name,email,password})
-    .then(res=>{
-      navigate("/login")
-      // alert("Created")
-    })
-    .catch(err=>{
-      console.log(err)
-    })
+ const handleSubmit = (e) => {
+  e.preventDefault();
+
+  // 1️⃣ Check if fields are empty
+  if (!name || !email || !password) {
+    alert("Please fill in all fields before registering");
+    return; // stop the function, do not send request
   }
+
+  // 2️⃣ Send request only if fields are filled
+  axios.post("http://localhost:3001/register", { name, email, password })
+    .then(res => {
+      if (res.data.status === "SUCCESS") {
+        alert("Registration successful! Please login.");
+        navigate("/login"); // only navigate if success
+      } else {
+        // server returned an error
+        alert(res.data.error || "Registration failed. Try again.");
+      }
+    })
+    .catch(err => {
+      console.log(err);
+      alert("Server error. Please try again later.");
+    });
+};
 
 
 
