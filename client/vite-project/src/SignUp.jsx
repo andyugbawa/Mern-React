@@ -20,7 +20,7 @@ import {Link,useNavigate} from "react-router-dom"
   }
 
   // 2️⃣ Send request only if fields are filled
-  axios.post("http://localhost:3001/register", { name, email, password })
+  axios.post("/api/register", { name, email, password },{ withCredentials: true })
     .then(res => {
       if (res.data.status === "SUCCESS") {
         alert("Registration successful! Please login.");
