@@ -3,17 +3,17 @@ import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 
 function Login() {
-  const [email, setEmail] = useState("");       // ✅ initialize
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
-  // ✅ allow cookies globally
+  // Ensure cookies are sent with every request
   axios.defaults.withCredentials = true;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // ✅ validation
+    // Validation
     if (!email || !password) {
       alert("Please enter both email and password");
       return;
@@ -21,22 +21,20 @@ function Login() {
 
     try {
       const res = await axios.post(
-        "/api/login",   // ✅ use Vercel backend
+        "/api/login", // Vercel backend API
         { email, password },
         { withCredentials: true }
       );
 
-      // ✅ correct response key (lowercase "status")
       if (res.data.status === "SUCCESS") {
         if (res.data.role === "admin") {
           navigate("/dashboard");
         } else {
-          navigate("/home");   // ✅ this is your main goal
+          navigate("/home");
         }
       } else {
         alert(res.data.error || "Login failed");
       }
-
     } catch (err) {
       console.error("Login error:", err);
       alert("Server error. Try again later.");
@@ -47,7 +45,6 @@ function Login() {
     <div className="d-flex justify-content-center align-items-center bg-secondary vh-100">
       <div className="bg-white p-3 rounded w-25">
         <h2>LOGIN</h2>
-
         <form onSubmit={handleSubmit}>
           <div className="mb-3">
             <label><strong>Email</strong></label>

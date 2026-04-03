@@ -1,101 +1,92 @@
-import {useState} from 'react'
-import "bootstrap/dist/css/bootstrap.min.css"
-import axios from "axios"
-import {Link,useNavigate} from "react-router-dom"
+import { useState } from "react";
+import axios from "axios";
+import { Link, useNavigate } from "react-router-dom";
 
- function SignUp() {
+function SignUp() {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const navigate = useNavigate();
 
-  const [name, setName] =useState()
-  const [email, setEmail] =useState()
-  const [password, setPassword] =useState()
-  const navigate = useNavigate()
-   
- const handleSubmit = (e) => {
-  e.preventDefault();
+  axios.defaults.withCredentials = true;
 
-  // 1️⃣ Check if fields are empty
-  if (!name || !email || !password) {
-    alert("Please fill in all fields before registering");
-    return; // stop the function, do not send request
-  }
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-  // 2️⃣ Send request only if fields are filled
-  axios.post("/api/register", { name, email, password },{ withCredentials: true })
-    .then(res => {
+    if (!name || !email || !password) {
+      alert("Please fill in all fields before registering");
+      return;
+    }
+
+    try {
+      const res = await axios.post(
+        "/api/register",
+        { name, email, password },
+        { withCredentials: true }
+      );
+
       if (res.data.status === "SUCCESS") {
-        alert("Registration successful! Please login.");
-        navigate("/login"); // only navigate if success
+        alert("Registration successful!");
+        navigate("/login");
       } else {
-        // server returned an error
-        alert(res.data.error || "Registration failed. Try again.");
+        alert(res.data.error || "Registration failed");
       }
-    })
-    .catch(err => {
-      console.log(err);
-      alert("Server error. Please try again later.");
-    });
-};
-
-
+    } catch (err) {
+      console.error("Signup error:", err);
+      alert("Server error. Try again later.");
+    }
+  };
 
   return (
-    <div className='d-flex justify-content-center align-items-center bg-secondary vh-100'>
-      <div className='bg-white p-3 rounded  w-25'>
-      <h2>REGISTER</h2>
-      <form onSubmit={handleSubmit}>
-        <div className='mb-3'>
-          <label htmlFor='name'>
-            <strong>Name</strong>
-          </label>
-          <input
-           type="text"
-           placeholder='Enter Name'
-           autoComplete='off'
-           name="name"
-           className='form-control rounded-0'
-           onChange={(e)=> setName(e.target.value)}
-          />
-        </div>
-        <div className='mb-3'>
-          <label htmlFor='email'>
-            <strong>Email</strong>
-          </label>
-          <input
-           type="text"
-           placeholder='Enter Email'
-           autoComplete='off'
-           name="email"
-           className='form-control rounded-0'
-           onChange={(e)=> setEmail(e.target.value)}
-          />
-        </div>
-        <div className='mb-3'>
-          <label htmlFor='password'>
-            <strong>Password</strong>
-          </label>
-          <input
-           type="password"
-           placeholder='Enter password'
-           autoComplete='off'
-           name="password"
-           className='form-control rounded-0'
-           onChange={(e)=> setPassword(e.target.value)}
-          />
-        </div>
-        <button type="submit" className='btn btn-success w-100 rounded-0'>
-          Register
-        </button>
-        <div>
+    <div className="d-flex justify-content-center align-items-center bg-secondary vh-100">
+      <div className="bg-white p-3 rounded w-25">
+        <h2>REGISTER</h2>
+        <form onSubmit={handleSubmit}>
+          <div className="mb-3">
+            <label><strong>Name</strong></label>
+            <input
+              type="text"
+              placeholder="Enter Name"
+              className="form-control rounded-0"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+            />
+          </div>
 
-      
-        </div>
-      </form>
-      <p>Already Have an Account</p>
-        <Link to="/login" className='btn btn-default border w-100 bg-light rounded-0'>
-         Login
+          <div className="mb-3">
+            <label><strong>Email</strong></label>
+            <input
+              type="email"
+              placeholder="Enter Email"
+              className="form-control rounded-0"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          </div>
+
+          <div className="mb-3">
+            <label><strong>Password</strong></label>
+            <input
+              type="password"
+              placeholder="Enter Password"
+              className="form-control rounded-0"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </div>
+
+          <button type="submit" className="btn btn-success w-100 rounded-0">
+            Register
+          </button>
+        </form>
+
+        <p className="mt-3">Already have an account?</p>
+        <Link to="/login" className="btn btn-success w-100 rounded-0">
+          Login
         </Link>
       </div>
     </div>
-  )
+  );
 }
-export default SignUp
+
+export default SignUp;

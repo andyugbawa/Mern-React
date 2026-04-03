@@ -1,0 +1,10 @@
+# Query: mern-backend.up.railway.app
+# ContextLines: 1
+
+1 result - 1 file
+
+client\vite-project\src\Login.jsx:
+  21    axios.post(
+  22:     "/api/login",
+  23      { email, password },
+           { withCredentials: true }
