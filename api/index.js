@@ -4,7 +4,8 @@ const cors = require("cors");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const cookieParser = require("cookie-parser");
-const UserModel = require("../server/models/User"); // adjust path
+const serverless = require("serverless-http");
+const UserModel = require("../server/models/User");
 
 const app = express();
 
@@ -12,7 +13,6 @@ const app = express();
 app.use(express.json());
 app.use(cookieParser());
 
-// CORS (IMPORTANT for Vercel)
 app.use(cors({
   origin: [
     "http://localhost:5173",
@@ -21,26 +21,23 @@ app.use(cors({
   credentials: true
 }));
 
-// Connect MongoDB (only once)
-if (!mongoose.connections[0].readyState) {
-  mongoose.connect(process.env.MONGO_URI)
-    .then(() => console.log("MongoDB Connected"))
-    .catch(err => console.log(err));
-}
+// MongoDB connection
+let isConnected = false;
 
-// Routes
-app.post("/register", async (req, res) => {
-  const { name, email, password } = req.body;
+const connectDB = async () => {
+  if (isConnected) return;
 
-  try {
-    const hash = await bcrypt.hash(password, 10);
-    await UserModel.create({ name, email, password: hash, role: "user" });
-    res.json({ status: "SUCCESS" });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
+  await mongoose.connect(process.env.MONGO_URI);
+  isConnected = true;
+  console.log("MongoDB Connected");
+};
+
+app.use(async (req, res, next) => {
+  await connectDB();
+  next();
 });
 
+// Routes
 app.post("/login", async (req, res) => {
   const { email, password } = req.body;
 
@@ -70,5 +67,17 @@ app.post("/login", async (req, res) => {
   }
 });
 
-// Export (VERY IMPORTANT)
-module.exports = app;
+app.post("/register", async (req, res) => {
+  const { name, email, password } = req.body;
+
+  try {
+    const hash = await bcrypt.hash(password, 10);
+    await UserModel.create({ name, email, password: hash, role: "user" });
+    res.json({ status: "SUCCESS" });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ✅ THIS IS THE KEY FIX
+module.exports = serverless(app);

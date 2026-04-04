@@ -14,7 +14,7 @@ function Login() {
     if (!email || !password) return alert("Please enter both email and password");
 
     try {
-      const res = await axios.post("/api/login", { email, password }, { withCredentials: true });
+      const res = await axios.post( "/api/login", { email, password }, { withCredentials: true });
       if (res.data.status === "SUCCESS") {
         navigate(res.data.role === "admin" ? "/dashboard" : "/home");
       } else {
